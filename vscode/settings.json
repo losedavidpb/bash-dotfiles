@@ -115,7 +115,7 @@
         "**/obj": true,
 
         // Git
-        "**/.git": true,
+        "**/.git": true
     },
 
     // Disable navigation routes
@@ -274,5 +274,5 @@
     // Code Lens
     "editor.codeLens": false,
     "workbench.colorTheme": "Default Dark+",
-    "window.zoomLevel": 1,
+    "window.zoomLevel": 1
 }

@@ -5,7 +5,7 @@
 # Speeds up load time
 DISABLE_UPDATE_PROMPT=true
 
-# Perform compinit only once a day.
+# Perform compinit only once a day
 autoload -Uz compinit
 
 setopt EXTENDEDGLOB

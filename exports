@@ -28,8 +28,8 @@ function pathappend () {
   fi
 }
 
-# Automatic cd at startup
-export CD_MODE="on"	# or off
+# Automatic cd at startup (on / off)
+export CD_MODE="on"
 
 # Configuration for WSL
 export DISPLAY=:0
@@ -46,7 +46,7 @@ export TERMINAL=/usr/bin/termite
 export SHELL=/bin/bash	# or /bin/zsh
 export SHELL_NAME=bash  # or zsh
 
-# Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
+# Make Python use UTF-8 encoding for output to stdin, stdout, and stderr
 export PYTHONIOENCODING='UTF-8'
 
 # ZSH settings
@@ -65,9 +65,7 @@ export HISTCONTROL=ignoreboth
 # WSL configuration
 export WSL_FS=/mnt/c/
 export WSL_HOME=/mnt/c/Users/$USER/
-export WSL_APPS=$WSL_HOME/OneDrive\ -\ Universidad\ de\ Las\ Palmas\ de\ Gran\ Canaria/Apps
-export WSL_ULPGC=$WSL_HOME/OneDrive\ -\ Universidad\ de\ Las\ Palmas\ de\ Gran\ Canaria/ULPGC
-export WSL_CURR_COURSE=$WSL_HOME/OneDrive\ -\ Universidad\ de\ Las\ Palmas\ de\ Gran\ Canaria/ULPGC/4º\ CURSO
+export WSL_APPS=$WSL_HOME/Documents/Apps
 
 # Configuration for chshell
 # DO NOT MODIFY ANY OF THESE VALUES
@@ -87,28 +85,38 @@ pathappend $WSL_FS
 pathappend $WSL_APPS
 
 # Package manager variables
-export PACKAGE_MANAGER="unkown"
+export PACKAGE_MANAGER="unknown"
 
-# List of available package managers associated
-# to release plain-text files
-declare -a name_pack_manager=(
-  yum pacman emerger
-  zypp apt apt-get apk
+# Package managers associated with release files
+declare -a package_managers=(
+	apt dnf yum pacman apk emerge
+	zypper xbps-install pkg
 )
 
-declare -a f_pack_manager=(
-  redhat-release arch-release gentoo-release
-  SuSE-release lsb-release debian_version alpine-release
+# Release files associated with a package manager
+declare -a release_files=(
+	"debian_version lsb-release"
+	"fedora-release"
+	"centos-release"
+	"arch-release"
+	"alpine-release"
+	"gentoo-release"
+	"SuSE-release"
+	"void-release"
+	"freebsd-update.conf"
 )
 
-for (( i=0; i<${#name_pack_manager[@]}; i++)); do
-	if [[ -f /etc/${f_pack_manager[i]} ]]; then
-		export PACKAGE_MANAGER=${name_pack_manager[i]}
-		break
-	fi
+# Detect current package manager
+for (( i=0; i<${#package_managers[@]}; i++ )); do
+	for release_file in ${release_files[$i]}; do
+		if [[ -f /etc/$release_file ]]; then
+			export PACKAGE_MANAGER="${package_managers[$i]}"
+			break 2
+		fi
+	done
 done
 
-unset name_pack_manager f_pack_manager
+unset package_managers release_files release_file i
 
 # Regular colors
 export BLACK="\e[0;30m"
@@ -120,7 +128,7 @@ export MAGENTA="\e[0;35m"
 export CYAN="\e[0;36m"
 export WHITE="\e[0;37m"
 
-# Regular Bold
+# Regular bold
 export BOLD_BLACK="\e[1;30m"
 export BOLD_RED="\e[1;31m"
 export BOLD_GREEN="\e[1;32m"
@@ -131,7 +139,7 @@ export BOLD_CYAN="\e[1;36m"
 export BOLD_WHITE="\e[1;37m"
 export BOLD="\e[1m"
 
-# Regular Underline
+# Regular underline
 export UNDERLINE_BLACK="\e[4;30m"
 export UNDERLINE_RED="\e[4;31m"
 export UNDERLINE_GREEN="\e[4;32m"
@@ -152,7 +160,7 @@ export BACKGROUND_PURPLE="\e[45m"
 export BACKGROUND_CYAN="\e[46m"
 export BACKGROUND_WHITE="\e[47m"
 
-# Expand Regular Background Horizontally
+# Expand regular background horizontally
 export EXPAND_BACKGROUND="\e[K"
 
 # Regular background horizontal
@@ -165,7 +173,7 @@ export EXPAND_BACKGROUND_PURPLE="\e[45m${EXPAND_BACKGROUND}"
 export EXPAND_BACKGROUND_CYAN="\e[46m${EXPAND_BACKGROUND}"
 export EXPAND_BACKGROUND_WHITE="\e[47m${EXPAND_BACKGROUND}"
 
-# High Intensity Colors
+# High intensity colors
 export HI_BLACK="\e[0;90m"
 export HI_RED="\e[0;91m"
 export HI_GREEN="\e[0;92m"
@@ -175,7 +183,7 @@ export HI_MAGENTA="\e[0;95m"
 export HI_CYAN="\e[0;96m"
 export HI_WHITE="\e[0;97m"
 
-# Bold High Intensity
+# Bold high intensity
 export BOLD_HI_BLACK="\e[1;90m"
 export BOLD_HI_RED="\e[1;91m"
 export BOLD_HI_GREEN="\e[1;92m"
@@ -185,7 +193,7 @@ export BOLD_HI_MAGENTA="\e[1;95m"
 export BOLD_HI_CYAN="\e[1;96m"
 export BOLD_HI_WHITE="\e[1;97m"
 
-# High Intensity Background
+# High intensity background
 export HI_BACKGROUND_BLACK="\e[100m"
 export HI_BACKGROUND_RED="\e[101m"
 export HI_BACKGROUND_GREEN="\e[102m"
@@ -205,7 +213,7 @@ export EXPAND_HI_BACKGROUND_PURPLE="\e[105m${EXPAND_BACKGROUND}"
 export EXPAND_HI_BACKGROUND_CYAN="\e[106m${EXPAND_BACKGROUND}"
 export EXPAND_HI_BACKGROUND_WHITE="\e[107m${EXPAND_BACKGROUND}"
 
-# Close Color
+# Close color
 export CLOSE_COLOR="\e[0m"
 
 # Color man pages

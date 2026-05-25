@@ -1,29 +1,36 @@
 #!/usr/bin/env bash
 #
-# Utilities for monotonous tasks.
+# Shell Utilities
 # ===================================
 #
-# This file includes all the utilities used to execute monotonous and
-# repetitive tasks such as compilation, or shell execution. Some of these
-# functions are used to have an easy management of shell dotfiles
-# (see README.md for more information)
+# This file contains utility functions used to simplify repetitive
+# tasks such as compilation, shell management, and dotfiles handling.
 #
-# Feel free to add new functions or edit the default ones as much as you
-# want, but as it is obvious, any modification is unsafe and not considered.
-# So, it is recommended to only include more functions if you want.
+# Feel free to add new functions or modify the existing ones as needed.
+# However, keep in mind that some dotfiles may depend on these utilities,
+# so changing them could affect the shell configuration behaviour.
 #
 # SYNTAX (IMPORTANT!!) <<<<<<<<
 #
-# Related to code style, some of the default functions are parser which will
-# read this file and extract some information based on a specific syntax. The
-# following list includes all the restrictions that should be taken into account:
+# This file includes an internal parser which extracts information
+# using a specific syntax format. The following rules must therefore
+# be respected so the parser can work as expected:
 #
-#	- Function declaration must be "function <name> () {"
-# 	- Private function needs to be after private heading ("# PRIVATE FUNCTIONS")
-# 	- Names for private functions needs to be declared with an "_" at the beggining
-#	- This initial comments should finish with a line with "END_DESCRIPTION"
-#	- Functions should have a docummentation, but it is not necessary
-#	- After private heading it is only possible to define private functions
+#   - Function declarations must follow:
+#       function <name> () {
+#
+#   - Private functions must be placed below the
+#     "# PRIVATE FUNCTIONS" heading
+#
+#   - Private function names must start with "_"
+#
+#   - This comment block must end with:
+#       END_DESCRIPTION
+#
+#   - Functions should include documentation whenever possible
+#
+#   - Only private functions may be declared below the
+#     "# PRIVATE FUNCTIONS" heading
 #
 # END_DESCRIPTION
 
@@ -34,10 +41,11 @@ unset script_path abs_script_path
 
 source $_shell_abs_script_directory/aliases
 
-# Display and error and usage message related to a function.
+# Display the error and usage message of a function.
 # This function would not print anything if parameters are
 # not all defined, but does not check its values.
-#   usage: showerr <FUNC_NAME> <ERR_MESSAGE> <USAGE_MESSAGE>
+#
+# usage: showerr <FUNC_NAME> <ERR_MESSAGE> <USAGE_MESSAGE>
 function showerr () {
 	if (( $# == 3 )); then
 		echo "error: $1: $2" 1>&2
@@ -47,11 +55,11 @@ function showerr () {
 	return 1
 }
 
-# Show information about the passed utility whether
-# it truly exists. If no arguments were passed, this
-# command would show help information for any single
-# function defined
-#   usage: shellhelp <NAME> [NAMES ...]
+# Show information about the passed function.
+# If no arguments were passed, this command would show help
+# information for any single function defined here.
+#
+# usage: shellhelp <NAME> [NAMES ...]
 function shellhelp () {
 	local usage_mssg="shellhelp <NAME>"
 	local error1_mssg="invalid number of arguments"
@@ -97,39 +105,36 @@ function shellhelp () {
 	fi
 }
 
-# Reload all dotfiles and bash settings.
-# It is important to notice that ZSH shell
-# is not optimized, so it will take a lot of
-# time to fully load into shell. Please, use
-# reload-bash instead whether you only want to reload
-# functions, aliases, or exports.
-#   usage: reload-bash
+# Reload all dotfiles and shell settings.
+#
+# Loading the full ZSH configuration may take some time,
+# as some components are not fully optimised.
+#
+# Use reload-bash instead if you only need to reload
+# aliases, functions, or environment variables.
+#
+# usage: reload-all-bash
 function reload-all-bash () {
-	echo "This function will create a new shell session from current one, so"
-	echo "you have to take into account that if this function is called multiple"
-	echo "times, multiple sessions would be created."
-	sleep 2
-
 	case $SHELL_NAME in
-		bash) bash ;;
-		zsh) zsh ;;
+		bash) exec bash ;;
+		zsh) exec zsh ;;
 		*) showerr "reload-bash" "invalid shell" "reload-bash"; return 1 ;;
     esac
 }
 
-# Reload all dotfiles to apply any changes
-# that was done at internal files
-#   usage: reload-bash
+# Reload all dotfiles configuration.
+#
+# usage: reload-bash
 function reload-bash () {
 	source ~/.config/shell/exports
 	source ~/.config/shell/aliases
 	source ~/.config/shell/functions
 }
 
-# Update value for passed global variable or add a new one
-# which passed value. Changes would be applied before
-# executing reload-bash.
-#   usage: setexport <NAME> <VALUE>
+# Create or update a global variable.
+# Changes will be applied after executing reload-bash.
+#
+# usage: setexport <NAME> <VALUE>
 function setexport () {
 	local usage_mssg="setexport <NAME> <VALUE>"
 	local error1_mssg="invalid number of arguments"
@@ -163,9 +168,10 @@ function setexport () {
 	mv $temp_file ~/.config/shell/exports
 }
 
-# Remove passed global variable whether it exists at current
-# exports file. Changes would be applied before executing reload-bash.
-#   usage: rmexport <NAME>
+# Remove a global variable from the exports file if it exists.
+# Changes will be applied after executing reload-bash.
+#
+# usage: rmexport <NAME>
 function rmexport () {
 	local usage_mssg="rmexport <NAME>"
 	local error1_mssg="invalid number of arguments"
@@ -194,10 +200,11 @@ function rmexport () {
 	mv $temp_file  ~/.config/shell/exports
 }
 
-# Change current shell whether passed value it is an available
-# and valid shell name. Changes would be applied before
-# executing alias reload-bash found at aliases
-#   usage: chshell NAME
+# Change the current shell if the given value is valid
+# and available on the system. Changes will be applied
+# after executing reload-bash.
+#
+# usage: chshell <NAME>
 function chshell () {
 	local usage_mssg="chshell <NAME>"
 	local error1_mssg="invalid number of arguments"
@@ -237,24 +244,28 @@ function chshell () {
     esac
 }
 
-# If this command is executed, next time shell runs it would
-# only load necessary files, since performance is most
-# important than appearance.
-#   usage: set-shell-simple
+# Enable a minimal shell startup mode.
+# Only essential files will be loaded in order
+# to prioritise performance over appearance.
+#
+# usage: set-shell-simple
 function set-shell-simple () {
 	setexport SHELL_STARTUP_MODE simple
 }
 
-# If this command is executed, next time shell runs
-# it would load all files, since appearance is most
-# important than performance.
-# # usage: set-shell-pretty
+# Enable the full shell startup mode.
+# All configuration files and visual components
+# will be loaded in order to prioritise appearance
+# over performance.
+#
+# usage: set-shell-pretty
 function set-shell-pretty () {
 	setexport SHELL_STARTUP_MODE pretty
 }
 
-# Return current memory porcentage that is not occupied
-#   usage: porcmem
+# Return the percentage of available system memory.
+#
+# usage: porcmem
 function porcmem () {
 	local column=$(free -w | egrep "Mem:")
 	local porc=$(( $(echo $column | awk '{print $3}') * 100 ))
@@ -263,10 +274,10 @@ function porcmem () {
 	return $porc
 }
 
-# Show information about RAM's status using an human
-# readable output. Status includes number of data used,
-# total capacity, and usage procentage.
-#   usage: raminfo
+# Display human-readable information about RAM usage,
+# including used memory, total capacity, and usage percentage.
+#
+# usage: raminfo
 function raminfo () {
 	local porc=$(porcmem; echo $?)
 
@@ -277,11 +288,11 @@ function raminfo () {
 	echo "${used} / ${total} (${porc}%)"
 }
 
-# Show information about a mounted filesystem using an
-# human readable output. Data printed include usage,
-# size, porcentage of use, filesystem type, and passed
-# path for target specified
-#   usage: mountinfo <TARGET>
+# Display human-readable information about a mounted
+# filesystem, including usage, total size, usage percentage,
+# filesystem type, and target path.
+#
+# usage: mountinfo <TARGET>
 function mountinfo () {
 	[[ -z $1 ]] && showerr "mountinfo" "target not specified" "mountinfo <TARGET>" && return 1
 
@@ -299,9 +310,10 @@ function mountinfo () {
 	return 1
 }
 
-# Create a script .sh file at current path adjusting its
-# permissions in order to be executable.
-#   usage: mksh <FILE> [FILE, ...]
+# Create one or more executable .sh files in the
+# current directory.
+#
+# usage: mksh <FILE> [FILE ...]
 function mksh () {
 	local usage_mssg="mksh <FILE> [FILE, ...]"
 
@@ -313,18 +325,22 @@ function mksh () {
 	done
 }
 
-# Create a new directory and set current working
-# directory at that new folder.
-#   usage: mkd <DIR_PATH>
+# Create a new directory and change the current
+# working directory to it.
+#
+# usage: mkd <DIR_PATH>
 function mkd () {
 	(( $# != 0 )) && showerr "mkd" "invalid number of parameters" "mkd <DIR_PATH>" && return 1
 	mkdir -p "$@" && cd "$_"
 }
 
-# Get size of a file/folder in human readable format.
-# If file or folder is not specified, command would
-# be applied to root path "/"
-#   usage: fs <FILE_PATH>
+# Display the size of a file or directory in a
+# human-readable format.
+#
+# If no path is specified, the root directory "/"
+# will be used by default.
+#
+# usage: fs <FILE_PATH>
 function fs () {
 	if [[ -n "$@" ]]; then
 		du -sh -- "$@"
@@ -333,8 +349,9 @@ function fs () {
 	fi
 }
 
-# Extracts current file according to its format
-#   usage: ex <FILE>
+# Extract a compressed file based on its format.
+#
+# usage: ex <FILE>
 function ex () {
 	(( $# != 1 )) && showerr "ex" "invalid number of arguments" "ex <FILE>" && return 1
 	[[ -z $1 ]] && showerr "ex" "$1 cannot be empty" "ex <FILE>" && return 1
@@ -360,11 +377,12 @@ function ex () {
     esac
 }
 
-# Create an interactive menu using key arrows.
-# You can include a header at the beggining of the menu
-# passing a third parameter with a plain-text file that
-# contains that title.
-#   usage: interactive_menu [HEADER_FILE] SELECTED_OPTION OPTIONS
+# Create an interactive menu controlled with arrow keys.
+#
+# An optional header can be displayed by passing a plain-text
+# file containing the desired title.
+#
+# usage: interactive_menu [HEADER_FILE] SELECTED_OPTION OPTIONS
 function interactive_menu () {
 	local error1_mssg="invalid number of parameters"
 	local usage_mssg="interactive_menu [HEADER_FILE] SELECTED_OPTION OPTIONS"
@@ -421,12 +439,14 @@ function interactive_menu () {
 # PRIVATE FUNCTIONS
 # ===========================
 #
-# It is not recommended to use any of these functions
-# since they are used as auxiliar tools which are not
-# safe and would only be used at some functions.
+# These functions are intended for internal use only
+# and should not be called directly unless necessary.
 #
-# Please do not modify private function heading since
-# some functions could not work as expected
+# They are mainly used as helper utilities by other
+# functions and may not be safe to use independently.
+#
+# Do not modify the private function heading, as some
+# utilities depend on it to work correctly.
 
 function _print_menu () {
 	local function_arguments=($@)
@@ -445,27 +465,39 @@ function _print_menu () {
 }
 
 function _parse_shellhelp () {
-	local func_name=""; local func_description=""; local flag_descr=0
+	local func_name=""
+	local func_usage=""
+	local func_description=""
+	local flag_descr=0
 
 	while IFS= read -r line; do
-		if (( $flag_descr == 1 )); then
-			local cond_flag_private_func=$(echo "$line" | egrep -w "# PRIVATE FUNCTIONS")
-			[[ ! -z $cond_flag_private_func ]] && break
+		if (( flag_descr == 1 )); then
+			[[ -n $(echo "$line" | egrep "^# PRIVATE FUNCTIONS") ]] && break
 
-			if [[ ! -z $(echo "$line" | egrep -w "^#.*|^function.*") ]]; then
-				if [[ ! -z $(echo "$line" | egrep -w "^function.*") ]]; then
-					func_name=$(echo "$line" | egrep -w "^function.*" | cut -d " " -f 2)
-					echo "#$func_name#\n * $func_name\n\n\t$func_description"
-					echo "#$func_name#"
-					unset func_name func_description
-				else
-					line=$(echo "$line" | tr -d "#" | tr -s " ")
-					func_description=${func_description}${line}$'\n\t'
+			if [[ -n $(echo "$line" | egrep "^function ") ]]; then
+				func_name=$(echo "$line" | cut -d " " -f 2)
+
+				echo "#$func_name#"
+				[[ -n $func_usage ]] && echo "USAGE: $func_usage"
+				echo
+				echo "$func_description"
+				echo "#$func_name#"
+
+				unset func_name func_usage func_description
+				continue
+			fi
+
+			if [[ $line =~ ^# ]]; then
+				line=$(echo "$line" | sed 's/^# *//')
+
+				if [[ $line =~ ^usage: ]]; then
+					func_usage=$(echo "$line" | sed 's/^usage: *//')
+				elif [[ -n $line ]]; then
+					func_description="${func_description}$line"$'\n'
 				fi
 			fi
 		else
-			local cond_flag_descr=$(echo "$line" | egrep -w "# END_DESCRIPTION")
-			[[ ! -z $cond_flag_descr ]] && flag_descr=1 && continue
+			[[ -n $(echo "$line" | egrep "^# END_DESCRIPTION") ]] && flag_descr=1
 		fi
-	done < $_shell_abs_script_directory/functions
+	done < "$_shell_abs_script_directory/functions"
 }

@@ -7,6 +7,6 @@
 source ~/.config/shell/exports
 
 case $SHELL_NAME in
-    "zsh") zsh ;;
-    "bash") bash ;;
+    "zsh") exec zsh ;;
+    "bash") exec bash ;;
 esac

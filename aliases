@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 #
-#
 # Feel free to add new aliases or edit the default ones as
 # much as you want, but always watch the consequences. It
-# is recommended to keep these aliases without modifying it
-# since some dotfiles may need them as they are in default
+# is recommended to keep these aliases without modifying them
+# as some dotfiles may rely on them.
 #
 # @author losedavidpb
 
@@ -17,46 +16,10 @@ source $_shell_abs_script_directory/exports
 
 # Aliases for package manager.
 #
-# It is important to notice that this aliases
-# would be defined as expected whether current
+# It is important to notice that these aliases
+# would be defined as expected as long as the
 # machine has installed an available one
 case $PACKAGE_MANAGER in
-	"yum")
-		alias install="sudo yum install"
-		alias uninstall="sudo yum remove"
-		alias update="sudo yum update"
-		alias upgrade="sudo yum upgrade"
-		alias list_all_packs="yum list"
-		alias search_pack="yum list | egrep"
-	;;
-
-	"pacman")
-		alias install="sudo pacman -Syyu"
-		alias uninstall="sudo pacman -Rns"
-		alias update="sudo pacman -Syyu"
-		#alias upgrade="sudo pacman -Syyu"
-		alias list_all_packs="pacman -Q"
-		alias search_pack="pacman -Q | egrep"
-	;;
-
-	"emerger")
-		alias install="sudo emerge"
-		alias uninstall="sudo emerge -C"
-		alias update="sudo emerge -uDp world"
-		#alias upgrade="sudo emerge -uDp world"
-		alias list_all_packs="emerge -s"
-		alias search_pack="emerge -s | egrep"
-	;;
-
-	"zypp")
-		alias install="sudo zypper ar"
-		alias uninstall="sudo zypper rr"
-		alias update="sudo zypper refresh"
-		alias upgrade="sudo zypper dist-upgrade"
-		alias list_all_packs="zypper repos"
-		alias search_pack="zypper repos | egrep"
-	;;
-
 	"apt")
 		alias install="sudo apt install"
 		alias uninstall="sudo apt remove"
@@ -75,6 +38,51 @@ case $PACKAGE_MANAGER in
 		alias search_pack="apt list | egrep"
 	;;
 
+	"dnf")
+		alias install="sudo dnf install"
+		alias uninstall="sudo dnf remove"
+		alias update="sudo dnf check-update"
+		alias upgrade="sudo dnf upgrade"
+		alias list_all_packs="dnf list installed"
+		alias search_pack="dnf search"
+	;;
+
+	"pacman")
+		alias install="sudo pacman -Syyu"
+		alias uninstall="sudo pacman -Rns"
+		alias update="sudo pacman -Syyu"
+		alias upgrade="sudo pacman -Syyu"
+		alias list_all_packs="pacman -Q"
+		alias search_pack="pacman -Q | egrep"
+	;;
+
+	"brew")
+		alias install="brew install"
+		alias uninstall="brew uninstall"
+		alias update="brew update"
+		alias upgrade="brew upgrade"
+		alias list_all_packs="brew list"
+		alias search_pack="brew search"
+	;;
+
+	"yum")
+		alias install="sudo yum install"
+		alias uninstall="sudo yum remove"
+		alias update="sudo yum update"
+		alias upgrade="sudo yum upgrade"
+		alias list_all_packs="yum list"
+		alias search_pack="yum list | egrep"
+	;;
+
+	"zypper")
+		alias install="sudo zypper ar"
+		alias uninstall="sudo zypper rr"
+		alias update="sudo zypper refresh"
+		alias upgrade="sudo zypper dist-upgrade"
+		alias list_all_packs="zypper repos"
+		alias search_pack="zypper repos | egrep"
+	;;
+
 	"apk")
 		alias install="sudo apk add"
 		alias uninstall="sudo apk del"
@@ -82,6 +90,33 @@ case $PACKAGE_MANAGER in
 		alias upgrade="sudo apk upgrade"
 		alias list_all_packs="apk search -v"
 		alias search_pack="apk search -v | egrep"
+	;;
+
+	"emerger")
+		alias install="sudo emerge"
+		alias uninstall="sudo emerge -C"
+		alias update="sudo emerge -uDp world"
+		alias upgrade="sudo emerge -uDp world"
+		alias list_all_packs="emerge -s"
+		alias search_pack="emerge -s | egrep"
+	;;
+
+	"xbps-install")
+		alias install="sudo xbps-install"
+		alias uninstall="sudo xbps-remove -R"
+		alias update="sudo xbps-install -S"
+		alias upgrade="sudo xbps-install -Su"
+		alias list_all_packs="xbps-query -l"
+		alias search_pack="xbps-query -Rs"
+	;;
+
+	"pkg")
+		alias install="sudo pkg install"
+		alias uninstall="sudo pkg delete"
+		alias update="sudo pkg update"
+		alias upgrade="sudo pkg upgrade"
+		alias list_all_packs="pkg info"
+		alias search_pack="pkg search"
 	;;
 
 	*)
@@ -94,20 +129,32 @@ case $PACKAGE_MANAGER in
 	;;
 esac
 
-alias .="cd ../"                             # go back just once
-alias ..="cd ../.."                          # go back twice
-alias dl="cd ~/Downloads"                    # shortcut to downloads
-alias dc="cd  ~/Documents"                   # shortcut to documents
+# === Directory navigation ===
+alias .="cd ../"                            # go back just once
+alias ..="cd ../.."                         # go back twice
 
-alias cwsl="cd $WSL_FS"					     # shortcut to WSL file system
-alias cdwslh="cd $WSL_HOME"					 # shortcut to WSL home
+# === User directories ===
+alias home="cd ~"                           # shortcut to home directory
+alias desk="cd ~/Desktop"                   # shortcut to desktop
+alias dl="cd ~/Downloads"                   # shortcut to downloads
+alias docs="cd ~/Documents"                 # shortcut to documents
+alias pic="cd ~/Pictures"                   # shortcut to pictures
+alias music="cd ~/Music"                    # shortcut to music
+alias vid="cd ~/Videos"                     # shortcut to videos
+alias cfg="cd ~/.config"                    # shortcut to .config
 
-alias wsldl="cd $WSL_HOME/Downloads"		 # shortcut to WSL downloads
-alias wsldc="cd $WSL_HOME/Documents"		 # shortcut to WSL documens
-alias cdapps="cd $WSL_APPS"					 # shortcut to WSL Apps
-alias cdulpgc="cd $WSL_APPS"				 # shortcut to WSL ULPGC
-alias cdcurrcourse="cd $WSL_APPS"			 # shortcut to WSL current course
+# === WSL directories ===
+alias wslfs="cd $WSL_FS"                    # shortcut to WSL file system
+alias wslhome="cd $WSL_HOME"                # shortcut to WSL home directory
+alias wsldesk="cd $WSL_HOME/Desktop"        # shortcut to WSL desktop
+alias wsldl="cd $WSL_HOME/Downloads"        # shortcut to WSL downloads
+alias wsldocs="cd $WSL_HOME/Documents"      # shortcut to WSL documents
+alias wslpic="cd $WSL_HOME/Pictures"        # shortcut to WSL pictures
+alias wslmusic="cd $WSL_HOME/Music"         # shortcut to WSL music
+alias wslvid="cd $WSL_HOME/Videos"          # shortcut to WSL videos
+alias wslapps="cd $WSL_APPS"                # shortcut to WSL applications
 
+# === File listing ===
 alias ls="ls --color=auto -F"                # show current files with colors
 alias lls="ls -l --color=auto -F"            # show detailed current files with colors
 alias lsd="ls -lCd .?* --color=auto -F"      # show current dotfiles with colors
@@ -115,21 +162,24 @@ alias llsd="ls -ld .?* --color=auto -F"      # show detailed current dotfiles wi
 alias lsa="ls -laC --color=auto -F"          # show all current files with colors
 alias llsa="ls -la --color=auto -F"          # show all detailed current files with colors
 
-alias grep='grep --colour=auto'              # find with greep with colors
-alias egrep='egrep --colour=auto'            # find with egreep with colors
-alias fgrep='fgrep --colour=auto'            # find with fgreep with colors
+# === Search utilities ===
+alias grep='grep --colour=auto'              # greep with colors
+alias egrep='egrep --colour=auto'            # egreep with colors
+alias fgrep='fgrep --colour=auto'            # fgreep with colors
 
+# === System utilities ===
 alias df="df -h"                             # human-readable sizes
 alias dfdev="df -Th | grep '^/dev'"          # human-readable sizes for devs
 alias free="free -m"                         # show sizes in MB
-
 alias more=less                              # both commands do the same
+alias cls="clear"                            # clear current terminal
+
+# === File management ===
 alias cpi="cp -i"                            # confirm before overwriting something
 alias cpr="cp -r"							 # copy files and directories
 alias rrm="rm -fR "                          # remove all files inside current directory
-alias cls="clear"                            # clear current terminal
 
-# GNU/Linux System information
+# === System information ===
 alias sysinfo="neofetch --source ~/.config/neofetch/ascii_icon --colors 133 249 255 133 255 255"
 alias cpuinfo="grep 'model name' /proc/cpuinfo | cut -d ":" -f 2 | uniq"
 alias osinfo="echo $(uname -o) $(uname -m)"
@@ -137,7 +187,7 @@ alias uptime="uptime -p | cut -c 4-"
 alias kernelinfo="uname -r"
 alias ddate='date +"%R - %a, %B %d, %Y"'
 
-# Git aliases
+# === Git shortcuts ===
 alias ga='git add -A'
 alias gc='git commit -m'
 alias gcl='git clone'

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# install.sh - installation for my dotfiles
+# install.sh - automatic installation of my dotfiles
 #
 # SYNTAX
 #
@@ -8,31 +8,29 @@
 #
 # DESCRIPTION
 #
-# 	Installs all my dotfiles on your current user's working directory.
+# Install all dotfiles into the current user's home directory.
 #
-# 	This script would not only prepare my dotfiles on your home directory,
-# 	since ZSH plugins and necessary packages will be installed too whether
-#	there is a valid package manager installed on your current machine.
+# Besides copying the configuration files, this script may also install
+# required packages and ZSH plugins if a supported package manager is
+# available on the system.
 #
-# 	To prevent errors, installation would ask you to create a backup for your
-#	old dotfiles, which will be stored at current dotfiles path (see exports).
+# To prevent data loss, the installation process can optionally create
+# a backup of existing dotfiles before applying any changes.
 #
-#	Relative to configuration, you can modify exports file to adjust some settings
-#	like dotfiles path. It is important to notice that any changes you make are not
-#	considered and can provoke errors, so please modify exports by your own risk!
+# Some settings, such as the dotfiles installation path, can be modified
+# through the exports file. Keep in mind that unsupported changes may
+# cause unexpected behaviour.
 #
 # ARGUMENTS
 #
-#	[-q | --quiet]			Execute installation with no output messages at
-#							current shell. This was included to offer a way
-#							to use this command at bash scripts. You should
-#							know that dotfiles backup would be done if this
-#							option has been set to current command
+#   [-q | --quiet]        Run the installation silently without displaying
+#                         output messages. This option is mainly intended
+#                         for scripting purposes.
 #
-# AUTHOR
+#                         When enabled, a backup of existing dotfiles will
+#                         be created automatically.
 #
-#	losedavidpb (https://github.com/losedavidpb)
-#
+# @author losedavidpb (https://github.com/losedavidpb)
 
 source ./exports
 source ./functions
@@ -45,9 +43,8 @@ no_deps_flag=0
 terminal_name="termite"
 shell_name="zsh"
 
-# List of packages that will be installed based on
-# current package manager. It is important to notice
-# that installation does not include all managers
+# Packages that may be installed automatically depending
+# on the detected package manager.
 declare -a _packages=(
 	git dos2unix zsh
 	build-essential neofetch
@@ -58,9 +55,9 @@ declare -a _packages=(
  	libgirepository1.0-dev libxml2-utils gperf
 )
 
-# List of ZSH plugins that will be installed. Installation
-# will be done manually to assure that lots of different
-# machines could install it without errors
+# List of ZSH plugins to install.
+# Plugins are installed manually to improve compatibility
+# across different systems and environments.
 declare -A _zsh_plugins=(
 	[zsh-autosuggestions]=https://github.com/zsh-users/zsh-autosuggestions
 	[zsh-syntax-highlighting]=https://github.com/zsh-users/zsh-syntax-highlighting
@@ -86,9 +83,33 @@ function _install_packages () {
 		(( $silent_flag == 0 )) && echo -n ">> Installing package $package_name ... "
 
 		case $PACKAGE_MANAGER in
+			"brew")
+				brew install "$package_name" &>/dev/null
+			;;
+
+			"zypper")
+				sudo zypper --non-interactive install "$package_name" &>/dev/null
+			;;
+
+			"emerge")
+				sudo emerge "$package_name" &>/dev/null
+			;;
+
+			"xbps-install")
+				sudo xbps-install -Sy "$package_name" &>/dev/null
+			;;
+
+			"pkg")
+				sudo pkg install -y "$package_name" &>/dev/null
+			;;
+
 			"yum")
 				yes | sudo yum install $package_name -q &>/dev/null
 				(( $? == 0 )) || echo "BAD" || exit 1
+			;;
+
+			"dnf")
+				sudo dnf -qy install "$package_name" &>/dev/null
 			;;
 
 			"pacman")
@@ -169,7 +190,7 @@ function _install_termite () {
 }
 
 function _install_zsh_plugins () {
-	(( $silent_flag == 0)) && echo -n ">> Install zsh plugins ... "
+	(( $silent_flag == 0)) && echo -n ">> Installing zsh plugins ... "
 
 	for zsh_plugin in "${!_zsh_plugins[@]}"; do
 		local zsh_plugin_url=${_zsh_plugins[$zsh_plugin]}
