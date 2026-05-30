@@ -95,7 +95,8 @@ declare -a package_managers=(
 
 # Release files associated with a package manager
 declare -a release_files=(
-	"debian_version lsb-release"
+	"debian_version"
+  "lsb-release"
 	"fedora-release"
 	"centos-release"
 	"arch-release"
