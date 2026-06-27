@@ -43,23 +43,7 @@ module.exports = {
         // custom CSS to embed in the main window
         css: '',
         // custom CSS to embed in the terminal window
-        termCSS: `
-			* {
-        			cursor: default;
-      		}
-
-      		x-row span {
-        			cursor: text;
-      		}
-
-			.tab_tab {
-        			background-color: #1f2329 !important;
-      		}
-
-      		.tab_tab.tab_active {
-        			background-color: #282c34 !important;
-      		}
-		`,
+        termCSS: ``,
         // set custom startup directory (must be an absolute path)
         workingDirectory: '',
         // if you're using a Linux setup which show native menus, set to false
